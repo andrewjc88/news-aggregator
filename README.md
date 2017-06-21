@@ -1,21 +1,18 @@
-# Udacity 60fps Course Samples
+Hi there,
 
-**Please note: this code is intended for you to hone your debugging skills. It contains a lot of code that you should not use in production!**
+Welcome to my optimization project.
 
-This is a simple web app that shows the top stories from [Hacker News](https://news.ycombinator.com/news) via [its API](http://blog.ycombinator.com/hacker-news-api).
+The optimizations that I have made include:
 
-Unfortunately it has a bunch of performance issues, such as:
+• Css minimize and inlined.
 
-* Layout Thrashing
-* Expensive painting
-* Unnecessary layouts
-* Long-running and badly-timed JavaScript
-* Bad touch handling
+• Stopped render blocking using async javaScript and moving to bottom of page.
 
-Your mission is to find and fix the issues, and make the app gloriously performant!
+• Forced css classes to new layers to speed up animations.
 
-## License
+TO DO:
 
-See /LICENSE for more.
+• Optimize JavaScript to stop thrashing (lines 280 - 315).
+  • Fix rating circle shading now working.
 
-This is not a Google product.
+• Multithreaded worker processing to speed up load time?

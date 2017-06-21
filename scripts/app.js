@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 APP.Main = (function() {
 
   var LAZY_LOAD_THRESHOLD = 300;
@@ -94,7 +96,7 @@ APP.Main = (function() {
     var storyDetails = $('sd-' + details.id);
 
     // Wait a little time then show the story details.
-    setTimeout(showStory.bind(this, details.id), 60);
+    requestAnimationFrame(showStory.bind(this, details.id));
 
     // Create and append the story. A visual change...
     // perhaps that should be in a requestAnimationFrame?
@@ -191,7 +193,7 @@ APP.Main = (function() {
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
-        setTimeout(animate, 4);
+        requestAnimationFrame(animate);
       else
         left = 0;
 
@@ -204,7 +206,7 @@ APP.Main = (function() {
     // every few milliseconds. That's going to keep
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
-    setTimeout(animate, 4);
+    requestAnimationFrame(animate);
   }
 
   function hideStory(id) {
@@ -230,7 +232,7 @@ APP.Main = (function() {
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left - target) > 0.5) {
-        setTimeout(animate, 4);
+        requestAnimationFrame(animate);
       } else {
         left = target;
         inDetails = false;
@@ -245,8 +247,43 @@ APP.Main = (function() {
     // every few milliseconds. That's going to keep
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
-    setTimeout(animate, 4);
+    requestAnimationFrame(animate);
   }
+
+// //--------------- OLD ------------------
+//   function colorizeAndScaleStories() {
+//
+//     var storyElements = document.querySelectorAll('.story');
+//
+//     // It does seem awfully broad to change all the
+//     // colors every time!
+//     for (var s = 0; s < storyElements.length; s++) {
+//
+//       var story = storyElements[s];
+//       var score = story.querySelector('.story__score');
+//       var title = story.querySelector('.story__title');
+//
+//       // Base the scale on the y position of the score.
+//       var height = main.offsetHeight;
+//       var mainPosition = main.getBoundingClientRect();
+//       var scoreLocation = score.getBoundingClientRect().top -
+//           document.body.getBoundingClientRect().top;
+//       var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
+//       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
+//
+//       score.style.width = (scale * 40) + 'px';
+//       score.style.height = (scale * 40) + 'px';
+//       score.style.lineHeight = (scale * 40) + 'px';
+//
+//       // Now figure out how wide it is and use that to saturate it.
+//       scoreLocation = score.getBoundingClientRect();
+//       var saturation = (100 * ((scoreLocation.width - 38) / 2));
+//
+//       score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+//       title.style.opacity = opacity;
+//     }
+//   }
+// //--------------- OLD ------------------
 
   /**
    * Does this really add anything? Can we do this kind
@@ -258,6 +295,9 @@ APP.Main = (function() {
 
     // It does seem awfully broad to change all the
     // colors every time!
+    var storiesData = [];
+    var saturationData = [];
+
     for (var s = 0; s < storyElements.length; s++) {
 
       var story = storyElements[s];
@@ -272,18 +312,40 @@ APP.Main = (function() {
       var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
 
-      score.style.width = (scale * 40) + 'px';
-      score.style.height = (scale * 40) + 'px';
-      score.style.lineHeight = (scale * 40) + 'px';
+      var newData = {
+        story:  story,
+        score: score,
+        title: title,
+        height: height,
+        mainPosition: mainPosition,
+        scoreLocation: scoreLocation,
+        scale: scale,
+        opacity: opacity,
+      };
+      storiesData.push (newData);
+    };
 
+    for (var i = 0; s < storiesData.length; i++) {
+      storiesData(score[i]).style.width = (scale * 40) + 'px';
+      storiesData(score[i]).style.height = (scale * 40) + 'px';
+      storiesData(score[i]).style.lineHeight = (scale * 40) + 'px';
+    };
       // Now figure out how wide it is and use that to saturate it.
-      scoreLocation = score.getBoundingClientRect();
-      var saturation = (100 * ((scoreLocation.width - 38) / 2));
 
-      score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-      title.style.opacity = opacity;
+    for (var i = 0; s < storiesData.length; i++) {
+      storiesData(scoreLocation[i]) = storiesData(score[i]).getBoundingClientRect();
+      var saturation = (100 * ((storiesData(scoreLocation[i]).width - 38) / 2));
+      var newSatData = (saturation);
+
+      saturationData.push (newSatData);
     }
-  }
+    for (var i = 0; s < storiesData.length; i++) {
+      storiesData(score[i]).style.backgroundColor = 'hsl(42, ' + saturationData(saturation[i]) + '%, 50%)';
+      storiesData(title[i]).style.opacity = storiesData(opacity[i]);
+    }
+  };
+
+
 
   main.addEventListener('touchstart', function(evt) {
 
