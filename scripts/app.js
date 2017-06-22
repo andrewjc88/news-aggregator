@@ -293,12 +293,12 @@ APP.Main = (function() {
 
 // Seperated out the the shading into it's own loop to stop thrashing.
 
-    for (var i = 0; i < storiesData.length; i++) {
-      storiesData[i].scoreLocation = storiesData[i].score.getBoundingClientRect();
-      var saturation = (100 * ((storiesData[i].scoreLocation.width - 38) / 2));
-      storiesData[i].score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-      storiesData[i].title.style.opacity = storiesData[i].opacity;
-    };
+    // for (var i = 0; i < storiesData.length; i++) {
+    //   storiesData[i].scoreLocation = storiesData[i].score.getBoundingClientRect();
+    //   var saturation = (100 * ((storiesData[i].scoreLocation.width - 38) / 2));
+    //   storiesData[i].score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+    //   storiesData[i].title.style.opacity = storiesData[i].opacity;
+    // };
   };
 
 

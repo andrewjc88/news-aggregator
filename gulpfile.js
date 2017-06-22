@@ -8,7 +8,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var gulp = require('gulp');
-var webserver = require('gulp-webserver');
+var connect = require('gulp-connect');
 
 // Lint Task
 gulp.task('lint', function() {
@@ -41,15 +41,9 @@ gulp.task('watch', function() {
 });
 
 // Serve To localhost
-gulp.task('webserver', function() {
-  gulp.src('app')
-    .pipe(webserver({
-      livereload: true,
-      directoryListing: true,
-      open: true,
-      port: 8000,
-    }));
+gulp.task('connect', function() {
+  connect.server();
 });
 
 // Default Task
-gulp.task('default', ['lint', 'sass', 'scripts', 'watch', 'webserver']);
+gulp.task('default', ['lint', 'sass', 'scripts', 'watch', 'connect']);
