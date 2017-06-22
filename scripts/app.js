@@ -139,6 +139,8 @@ APP.Main = (function() {
       if (typeof kids === 'undefined')
         return;
 
+// ------------------ Thrashing? ----------------//
+
       for (var k = 0; k < kids.length; k++) {
 
         comment = document.createElement('aside');
@@ -178,6 +180,9 @@ APP.Main = (function() {
 
     document.body.classList.add('details-active');
     storyDetails.style.opacity = 1;
+
+    // Array to batch data between scopes. //
+    var posDeets = [];
 
     function animate () {
 
@@ -238,65 +243,19 @@ APP.Main = (function() {
         inDetails = false;
       }
 
-      // And update the styles. Wait, is this a read-write cycle?
-      // I hope I don't trigger a forced synchronous layout!
+
       storyDetails.style.left = left + 'px';
     }
 
-    // We want slick, right, so let's do a setTimeout
-    // every few milliseconds. That's going to keep
-    // it all tight. Or maybe we're doing visual changes
-    // and they should be in a requestAnimationFrame
     requestAnimationFrame(animate);
   }
 
-// //--------------- OLD ------------------
-//   function colorizeAndScaleStories() {
-//
-//     var storyElements = document.querySelectorAll('.story');
-//
-//     // It does seem awfully broad to change all the
-//     // colors every time!
-//     for (var s = 0; s < storyElements.length; s++) {
-//
-//       var story = storyElements[s];
-//       var score = story.querySelector('.story__score');
-//       var title = story.querySelector('.story__title');
-//
-//       // Base the scale on the y position of the score.
-//       var height = main.offsetHeight;
-//       var mainPosition = main.getBoundingClientRect();
-//       var scoreLocation = score.getBoundingClientRect().top -
-//           document.body.getBoundingClientRect().top;
-//       var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
-//       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
-//
-//       score.style.width = (scale * 40) + 'px';
-//       score.style.height = (scale * 40) + 'px';
-//       score.style.lineHeight = (scale * 40) + 'px';
-//
-//       // Now figure out how wide it is and use that to saturate it.
-//       scoreLocation = score.getBoundingClientRect();
-//       var saturation = (100 * ((scoreLocation.width - 38) / 2));
-//
-//       score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-//       title.style.opacity = opacity;
-//     }
-//   }
-// //--------------- OLD ------------------
-
-  /**
-   * Does this really add anything? Can we do this kind
-   * of work in a cheaper way?
-   */
   function colorizeAndScaleStories() {
 
     var storyElements = document.querySelectorAll('.story');
 
-    // It does seem awfully broad to change all the
-    // colors every time!
+// Array of objects to pass to different scopes. //
     var storiesData = [];
-    var saturationData = [];
 
     for (var s = 0; s < storyElements.length; s++) {
 
@@ -307,8 +266,7 @@ APP.Main = (function() {
       // Base the scale on the y position of the score.
       var height = main.offsetHeight;
       var mainPosition = main.getBoundingClientRect();
-      var scoreLocation = score.getBoundingClientRect().top -
-          document.body.getBoundingClientRect().top;
+      var scoreLocation = score.getBoundingClientRect().top - document.body.getBoundingClientRect().top;
       var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
 
@@ -325,24 +283,22 @@ APP.Main = (function() {
       storiesData.push (newData);
     };
 
-    for (var i = 0; s < storiesData.length; i++) {
-      storiesData(score[i]).style.width = (scale * 40) + 'px';
-      storiesData(score[i]).style.height = (scale * 40) + 'px';
-      storiesData(score[i]).style.lineHeight = (scale * 40) + 'px';
+// Seperated the style writes into new loop to stop forced synchronous layouts //
+
+    for (var i = 0; i < storiesData.length; i++) {
+      storiesData[i].score.style.width = (storiesData[i].scale * 40) + 'px';
+      storiesData[i].score.style.height = (storiesData[i].scale * 40) + 'px';
+      storiesData[i].score.style.lineHeight = (storiesData[i].scale * 40) + 'px';
     };
-      // Now figure out how wide it is and use that to saturate it.
 
-    for (var i = 0; s < storiesData.length; i++) {
-      storiesData(scoreLocation[i]) = storiesData(score[i]).getBoundingClientRect();
-      var saturation = (100 * ((storiesData(scoreLocation[i]).width - 38) / 2));
-      var newSatData = (saturation);
+// Seperated out the the shading into it's own loop to stop thrashing.
 
-      saturationData.push (newSatData);
-    }
-    for (var i = 0; s < storiesData.length; i++) {
-      storiesData(score[i]).style.backgroundColor = 'hsl(42, ' + saturationData(saturation[i]) + '%, 50%)';
-      storiesData(title[i]).style.opacity = storiesData(opacity[i]);
-    }
+    for (var i = 0; i < storiesData.length; i++) {
+      storiesData[i].scoreLocation = storiesData[i].score.getBoundingClientRect();
+      var saturation = (100 * ((storiesData[i].scoreLocation.width - 38) / 2));
+      storiesData[i].score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+      storiesData[i].title.style.opacity = storiesData[i].opacity;
+    };
   };
 
 
